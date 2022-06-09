@@ -1,26 +1,20 @@
 module Search
   class ReviewsService < BaseService
+    MINIMUM_SEARCH_CHARS = 3
+
     def execute
+      raise API::Errors::InvalidSearchError if @search_query.present? && @search_query.length <= MINIMUM_SEARCH_CHARS
+
       super
 
-      filter_by_following if params[:q][:from_following].present?
+      filter_by_search if @search_query.present?
     end
 
     private
 
-    # Examples of filter
-    # {q: { from_following: true }}
-    # {q: { from_following: { name: "alice"} }} # Case sensitive
-    def filter_by_following
-      target_users = @user.following_users
-      target_users = target_users.where(name: params[:q][:from_following][:name]) if params[:q][:from_following].is_a?(Hash)
-      target_user_ids = target_users.pluck(:id)
-
-      @records = @records.where(author_id: target_user_ids)
-    end
-
-    def whitelisted_search_params
-      [:title, :description, :rating]
+    def filter_by_search
+      @records = @records.joins(:user).where("title ILIKE %?% ", @search_query)
+                          .or_where("description ILIKE %?%", @search_query)
     end
   end
 end

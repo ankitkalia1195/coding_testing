@@ -13,7 +13,6 @@ module Search
 
     def execute
       order if @order_query.present?
-      search if @search_query.present?
       paginate
 
       @records
@@ -27,11 +26,6 @@ module Search
                          .extending(JsonPaginatable)
     end
 
-    def search
-      search_params = @search_query.slice(*whitelisted_search_params)
-      @records = @records.where(search_params)
-    end
-
     def order
       if @order_query.present? && @direction_query.present?
         @records = @records.order(@order_query => @direction_query)
@@ -40,10 +34,6 @@ module Search
       end
 
       @records = @records.order(created_at: :desc)
-    end
-
-    def whitelisted_search_params
-      raise "Whitelisted search params must be defined for the service"
     end
   end
 end

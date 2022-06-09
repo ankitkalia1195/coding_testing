@@ -8,6 +8,7 @@ module Search
       super
 
       filter_by_search if @search_query.present?
+      @records
     end
 
     private

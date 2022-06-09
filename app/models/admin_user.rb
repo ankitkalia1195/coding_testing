@@ -1,18 +1,3 @@
-class AdminUser < ApplicationRecord
-  devise :database_authenticatable, :registerable, :rememberable, :validatable,
-         :trackable, :recoverable
-
-
-
-
-
-
-  validates :email, presence: true  
-
-
-
-
-
-
-
+class AdminUser < User
+  default_scope -> { where(is_admin: true) }
 end

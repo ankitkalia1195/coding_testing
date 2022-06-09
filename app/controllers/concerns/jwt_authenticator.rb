@@ -73,6 +73,13 @@ module JwtAuthenticator
     end
   end
 
+  def generate_api_token(identical, current_rfr_token = nil)
+    raw_refresh_auth_token = current_rfr_token || identical.refresh_auth_tokens.create.raw_token
+    token = encode(identical.id, identical.class.name, raw_refresh_auth_token)
+
+    { token: token, refresh_token: raw_refresh_auth_token }
+  end
+
   private
 
   def clear_token(token)
